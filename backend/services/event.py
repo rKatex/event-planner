@@ -1,18 +1,18 @@
 from .mongoresource import MongoResource
 from flask import jsonify
-from flask_restful import fields, marshal_with
-
-event_fields = {
-    'name':   fields.String,
-    'description':    fields.String,
-}
+from flask_restful import reqparse
 
 
-class Event(MongoResource): 
+eventParser = reqparse.RequestParser()
+eventParser.add_argument('name', required=True)
+eventParser.add_argument('description')
+
+
+class Event(MongoResource):
     def get(self):
         return jsonify(list(self.mongo.db.events.find()))
 
-    @marshal_with(event_fields)
-    def post(self, event):
-        print(event)
-        #self.mongo.db.events.insert_one()
+    def post(self):
+        event = eventParser.parse_args()
+        inserted_id = self.mongo.db.events.insert_one(event).inserted_id
+        return jsonify({"_id": inserted_id})

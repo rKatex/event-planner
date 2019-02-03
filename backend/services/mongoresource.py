@@ -3,4 +3,4 @@ from flask_pymongo import PyMongo
 
 class MongoResource(Resource):
     def __init__(self, **kwargs):
-        self.mongo = kwargs["mongo"]
+        self.mongo:PyMongo = kwargs["mongo"]
